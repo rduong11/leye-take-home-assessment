@@ -34,7 +34,7 @@ export default function Details() {
   async function fetchBlogContent() {
     try {
       const response = await fetch(
-        "https://www.lettuce.com/wp-json/lettuce/blog-content"
+        "https://www.lettuce.com/wp-json/lettuce/blog-content",
       );
       const data = await response.json();
       const post = data.find((item: BlogPost) => item.ID === Number(blogId));
@@ -67,14 +67,14 @@ export default function Details() {
 
 const styles = StyleSheet.create({
   h1: {
-    padding: 10,
+    margin: 10,
     fontSize: 30,
     fontWeight: "bold",
     color: colors.text,
     fontFamily: "Public-Sans-Bold",
   },
   dateText: {
-    padding: 10,
+    margin: 10,
     fontSize: 15,
     color: colors.text,
     fontFamily: "Public-Sans-Light",

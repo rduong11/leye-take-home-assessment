@@ -35,7 +35,7 @@ export default function Index() {
   async function fetchBlogPosts() {
     try {
       const response = await fetch(
-        "https://www.lettuce.com/wp-json/lettuce/blog-content"
+        "https://www.lettuce.com/wp-json/lettuce/blog-content",
       );
 
       const data = await response.json();
@@ -53,12 +53,14 @@ export default function Index() {
           <View key={blog.ID}>
             <Link href={`/details/${blog.ID}`}>
               <View style={styles.blogContainer}>
-                <Text style={styles.title}>{blog.title}</Text>
-                <Text style={styles.text}>{blog.updated_at}</Text>
                 <Image
                   source={{ uri: blog.featured_image.url }}
-                  style={{ width: 150, height: 150 }}
+                  style={styles.image}
                 />
+                <View style={styles.textContainer}>
+                  <Text style={styles.title}>{blog.title}</Text>
+                  <Text style={styles.text}>{blog.updated_at}</Text>
+                </View>
               </View>
             </Link>
           </View>
@@ -74,23 +76,37 @@ const styles = StyleSheet.create({
     margin: 10,
   },
   h1: {
+    padding: 10,
     fontSize: 35,
     color: colors.text,
     fontFamily: "Public-Sans-Bold",
   },
   title: {
-    fontSize: 23,
+    padding: 10,
+    fontSize: 20,
     color: colors.text,
     fontFamily: "Public-Sans-Semi-Bold",
   },
   text: {
+    padding: 10,
     fontSize: 18,
     color: colors.secondary_text,
     fontFamily: "Public-Sans-Regular",
   },
-  blogContainer: {
+  textContainer: {
+    padding: 10,
     flex: 1,
+  },
+  blogContainer: {
+    flexDirection: "row",
     marginHorizontal: 10,
     marginTop: 10,
+  },
+  image: {
+    padding: 10,
+    width: 175,
+    height: 120,
+    borderRadius: 5,
+    alignSelf: "center",
   },
 });

@@ -8,5 +8,17 @@ export default function RootLayout() {
     "Public-Sans-Semi-Bold": require("../assets/fonts/PublicSans-SemiBold.ttf"),
     "Public-Sans-Light": require("../assets/fonts/PublicSans-Light.ttf"),
   });
-  return <Stack></Stack>;
+  return (
+    <Stack>
+      <Stack.Screen name="index" options={{ headerShown: false }} />
+      <Stack.Screen
+        name="details/[blogId]"
+        options={{
+          headerTitle: "",
+          headerBackButtonDisplayMode: "minimal",
+          headerTransparent: true,
+        }}
+      />
+    </Stack>
+  );
 }
