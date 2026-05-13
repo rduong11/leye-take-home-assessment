@@ -28,21 +28,20 @@ export default function Details() {
   const { width } = useWindowDimensions();
 
   useEffect(() => {
+    async function fetchBlogContent() {
+      try {
+        const response = await fetch(
+          "https://www.lettuce.com/wp-json/lettuce/blog-content",
+        );
+        const data = await response.json();
+        const post = data.find((item: BlogPost) => item.ID === Number(blogId));
+        setBlogPost(post);
+      } catch (error) {
+        console.log(error);
+      }
+    }
     fetchBlogContent();
   }, [blogId]);
-
-  async function fetchBlogContent() {
-    try {
-      const response = await fetch(
-        "https://www.lettuce.com/wp-json/lettuce/blog-content",
-      );
-      const data = await response.json();
-      const post = data.find((item: BlogPost) => item.ID === Number(blogId));
-      setBlogPost(post);
-    } catch (error) {
-      console.log(error);
-    }
-  }
 
   return (
     <SafeAreaView>
