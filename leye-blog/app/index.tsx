@@ -35,7 +35,7 @@ export default function Index() {
   async function fetchBlogPosts() {
     try {
       const response = await fetch(
-        "https://www.lettuce.com/wp-json/lettuce/blog-content",
+        "https://www.lettuce.com/wp-json/lettuce/blog-content"
       );
 
       const data = await response.json();
@@ -48,11 +48,11 @@ export default function Index() {
   return (
     <SafeAreaView>
       <Text style={styles.h1}>Newsfeed</Text>
-      <ScrollView contentContainerStyle={{ gap: 16, padding: 16 }}>
+      <ScrollView style={styles.container}>
         {blogPosts.map((blog) => (
           <View key={blog.ID}>
-            <Link href={"/details"}>
-              <View>
+            <Link href={`/details/${blog.ID}`}>
+              <View style={styles.blogContainer}>
                 <Text style={styles.title}>{blog.title}</Text>
                 <Text style={styles.text}>{blog.updated_at}</Text>
                 <Image
@@ -69,18 +69,28 @@ export default function Index() {
 }
 
 const styles = StyleSheet.create({
+  container: {
+    padding: 10,
+    margin: 10,
+  },
   h1: {
     fontSize: 35,
-    fontWeight: "bold",
     color: colors.text,
+    fontFamily: "Public-Sans-Bold",
   },
   title: {
     fontSize: 23,
-    fontWeight: "bold",
     color: colors.text,
+    fontFamily: "Public-Sans-Semi-Bold",
   },
   text: {
     fontSize: 18,
     color: colors.secondary_text,
+    fontFamily: "Public-Sans-Regular",
+  },
+  blogContainer: {
+    flex: 1,
+    marginHorizontal: 10,
+    marginTop: 10,
   },
 });
