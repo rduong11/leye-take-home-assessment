@@ -9,10 +9,11 @@ import {
   Pressable,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { parse } from "date-fns";
 
 interface BlogPostType {
   topics: string[];
-  updated_at: string;
+  created_at: string;
   title: string;
   ID: number;
   featured_image: BlogImageType;
@@ -28,7 +29,18 @@ const colors = {
   secondary_text: "#41424A",
   underline: "#EDEDEB",
   green_primary: "#258834",
+  white: "#FFF",
 };
+
+function msToDay(date: string) {
+  return Math.floor(
+    (new Date().getTime() - parse(date, "MMMM d, yyyy", new Date()).getTime()) /
+      1000 /
+      60 /
+      60 /
+      24,
+  );
+}
 
 const filters = ["All Articles", "Guides", "Openings"];
 
@@ -52,6 +64,7 @@ export default function Index() {
     }
     fetchBlogPosts();
   }, []);
+
   return (
     <SafeAreaView>
       <Text style={styles.h1}>Newsfeed</Text>
@@ -80,13 +93,18 @@ export default function Index() {
             <View key={blog.ID}>
               <Link href={`/details/${blog.ID}`}>
                 <View style={styles.blogContainer}>
-                  <Image
-                    source={{ uri: blog.featured_image.url }}
-                    style={styles.image}
-                  />
+                  <View>
+                    {msToDay(blog.created_at) <= 7 && (
+                      <Text style={styles.newPill}>NEW!</Text>
+                    )}
+                    <Image
+                      source={{ uri: blog.featured_image.url }}
+                      style={styles.image}
+                    />
+                  </View>
                   <View style={styles.textContainer}>
                     <Text style={styles.title}>{blog.title}</Text>
-                    <Text style={styles.text}>{blog.updated_at}</Text>
+                    <Text style={styles.text}>{blog.created_at}</Text>
                   </View>
                 </View>
               </Link>
@@ -133,7 +151,7 @@ const styles = StyleSheet.create({
   image: {
     padding: 10,
     width: 175,
-    height: 120,
+    height: 125,
     borderRadius: 5,
     alignSelf: "center",
   },
@@ -151,5 +169,19 @@ const styles = StyleSheet.create({
     borderBottomWidth: 3,
     fontFamily: "Public-Sans-Semi-Bold",
     borderColor: colors.green_primary,
+  },
+  newPill: {
+    fontSize: 15,
+    borderRadius: 22,
+    backgroundColor: colors.green_primary,
+    fontFamily: "Public-Sans-Semi-Bold",
+    color: colors.white,
+    position: "absolute",
+    top: 18,
+    left: 15,
+    alignSelf: "flex-start",
+    paddingHorizontal: 16,
+    paddingVertical: 4,
+    zIndex: 1,
   },
 });
