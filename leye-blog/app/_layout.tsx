@@ -1,5 +1,6 @@
 import { Stack } from "expo-router";
 import { useFonts } from "expo-font";
+import CustomBackButton from "@/components/CustomBackButton";
 
 export default function RootLayout() {
   const primaryFont = useFonts({
@@ -15,8 +16,8 @@ export default function RootLayout() {
         name="details/[blogId]"
         options={{
           headerTitle: "",
-          headerBackButtonDisplayMode: "minimal",
           headerTransparent: true,
+          headerLeft: () => <CustomBackButton />,
         }}
       />
     </Stack>
