@@ -7,6 +7,7 @@ import {
   ScrollView,
   Image,
   Pressable,
+  ActivityIndicator,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { parse } from "date-fns";
@@ -47,6 +48,7 @@ const filters = ["All Articles", "Guides", "Openings"];
 export default function Index() {
   const [blogPosts, setBlogPosts] = useState<BlogPostType[]>([]);
   const [activeFilter, setActiveFilter] = useState<string>("All Articles");
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
     async function fetchBlogPosts() {
@@ -58,6 +60,7 @@ export default function Index() {
         const data = await response.json();
 
         setBlogPosts(data);
+        setIsLoading(false);
       } catch (error) {
         console.log(error);
       }
@@ -66,51 +69,61 @@ export default function Index() {
   }, []);
 
   return (
-    <SafeAreaView>
-      <Text style={styles.h1}>Newsfeed</Text>
-      <View style={styles.buttonNavContainer}>
-        {filters.map((filter) => (
-          <Pressable key={filter} onPress={() => setActiveFilter(filter)}>
-            <Text
-              style={[
-                styles.text,
-                filter === activeFilter ? styles.activeButton : null,
-              ]}
-            >
-              {filter}
-            </Text>
-          </Pressable>
-        ))}
-      </View>
-      <ScrollView style={styles.container}>
-        {blogPosts
-          .filter((blog) =>
-            activeFilter === "All Articles"
-              ? true
-              : blog.topics?.includes(activeFilter),
-          )
-          .map((blog) => (
-            <View key={blog.ID}>
-              <Link href={`/details/${blog.ID}`}>
-                <View style={styles.blogContainer}>
-                  <View>
-                    {msToDay(blog.created_at) <= 7 && (
-                      <Text style={styles.newPill}>NEW!</Text>
-                    )}
-                    <Image
-                      source={{ uri: blog.featured_image.url }}
-                      style={styles.image}
-                    />
-                  </View>
-                  <View style={styles.textContainer}>
-                    <Text style={styles.title}>{blog.title}</Text>
-                    <Text style={styles.text}>{blog.created_at}</Text>
-                  </View>
+    <SafeAreaView style={{ flex: 1 }}>
+      {isLoading ? (
+        <ActivityIndicator
+          size="large"
+          color={colors.green_primary}
+          style={isLoading ? styles.loadingCircle : null}
+        />
+      ) : (
+        <>
+          <Text style={styles.h1}>Newsfeed</Text>
+          <View style={styles.buttonNavContainer}>
+            {filters.map((filter) => (
+              <Pressable key={filter} onPress={() => setActiveFilter(filter)}>
+                <Text
+                  style={[
+                    styles.text,
+                    filter === activeFilter ? styles.activeButton : null,
+                  ]}
+                >
+                  {filter}
+                </Text>
+              </Pressable>
+            ))}
+          </View>
+          <ScrollView style={styles.container}>
+            {blogPosts
+              .filter((blog) =>
+                activeFilter === "All Articles"
+                  ? true
+                  : blog.topics?.includes(activeFilter),
+              )
+              .map((blog) => (
+                <View key={blog.ID}>
+                  <Link href={`/details/${blog.ID}`}>
+                    <View style={styles.blogContainer}>
+                      <View>
+                        {msToDay(blog.created_at) <= 7 && (
+                          <Text style={styles.newPill}>NEW!</Text>
+                        )}
+                        <Image
+                          source={{ uri: blog.featured_image.url }}
+                          style={styles.image}
+                        />
+                      </View>
+                      <View style={styles.textContainer}>
+                        <Text style={styles.title}>{blog.title}</Text>
+                        <Text style={styles.text}>{blog.created_at}</Text>
+                      </View>
+                    </View>
+                  </Link>
                 </View>
-              </Link>
-            </View>
-          ))}
-      </ScrollView>
+              ))}
+          </ScrollView>
+        </>
+      )}
     </SafeAreaView>
   );
 }
@@ -183,5 +196,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 4,
     zIndex: 1,
+  },
+  loadingCircle: {
+    flex: 1,
+    justifyContent: "center",
   },
 });
