@@ -1,18 +1,15 @@
-import { Link } from "expo-router";
 import { useEffect, useState } from "react";
-import {
-  Text,
-  View,
-  StyleSheet,
-  ScrollView,
-  Image,
-  Pressable,
-  ActivityIndicator,
-} from "react-native";
+import { Text, StyleSheet, ScrollView, ActivityIndicator } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { parse } from "date-fns";
+import { COLORS } from "@/constants/colors";
+import { API_URL } from "@/constants/api";
+import { msToDay } from "@/utils/date";
+import { filters } from "@/constants/topicFilters";
+import NavContent from "@/components/NavContent";
+import NewPill from "@/components/NewPill";
+import BlogCard from "@/components/BlogCard";
 
-interface BlogPostType {
+interface BlogPostMapType {
   topics: string[];
   created_at: string;
   title: string;
@@ -25,37 +22,15 @@ interface BlogImageType {
   alt_text: string;
 }
 
-const colors = {
-  text: "#3A3036",
-  secondary_text: "#41424A",
-  underline: "#EDEDEB",
-  green_primary: "#258834",
-  white: "#FFF",
-};
-
-function msToDay(date: string) {
-  return Math.floor(
-    (new Date().getTime() - parse(date, "MMMM d, yyyy", new Date()).getTime()) /
-      1000 /
-      60 /
-      60 /
-      24,
-  );
-}
-
-const filters = ["All Articles", "Guides", "Openings"];
-
 export default function Index() {
-  const [blogPosts, setBlogPosts] = useState<BlogPostType[]>([]);
+  const [blogPosts, setBlogPosts] = useState<BlogPostMapType[]>([]);
   const [activeFilter, setActiveFilter] = useState<string>("All Articles");
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
     async function fetchBlogPosts() {
       try {
-        const response = await fetch(
-          "https://www.lettuce.com/wp-json/lettuce/blog-content",
-        );
+        const response = await fetch(API_URL);
 
         const data = await response.json();
 
@@ -73,26 +48,17 @@ export default function Index() {
       {isLoading ? (
         <ActivityIndicator
           size="large"
-          color={colors.green_primary}
+          color={COLORS.green_primary}
           style={isLoading ? styles.loadingCircle : null}
         />
       ) : (
         <>
           <Text style={styles.h1}>Newsfeed</Text>
-          <View style={styles.buttonNavContainer}>
-            {filters.map((filter) => (
-              <Pressable key={filter} onPress={() => setActiveFilter(filter)}>
-                <Text
-                  style={[
-                    styles.text,
-                    filter === activeFilter ? styles.activeButton : null,
-                  ]}
-                >
-                  {filter}
-                </Text>
-              </Pressable>
-            ))}
-          </View>
+          <NavContent
+            filters={filters}
+            activeFilter={activeFilter}
+            onFilterChange={setActiveFilter}
+          />
           <ScrollView style={styles.container}>
             {blogPosts
               .filter((blog) =>
@@ -101,25 +67,15 @@ export default function Index() {
                   : blog.topics?.includes(activeFilter),
               )
               .map((blog) => (
-                <View key={blog.ID}>
-                  <Link href={`/details/${blog.ID}`}>
-                    <View style={styles.blogContainer}>
-                      <View>
-                        {msToDay(blog.created_at) <= 7 && (
-                          <Text style={styles.newPill}>NEW!</Text>
-                        )}
-                        <Image
-                          source={{ uri: blog.featured_image.url }}
-                          style={styles.image}
-                        />
-                      </View>
-                      <View style={styles.textContainer}>
-                        <Text style={styles.title}>{blog.title}</Text>
-                        <Text style={styles.text}>{blog.created_at}</Text>
-                      </View>
-                    </View>
-                  </Link>
-                </View>
+                <BlogCard
+                  key={blog.ID}
+                  id={blog.ID}
+                  title={blog.title}
+                  created_at={blog.created_at}
+                  featured_image={blog.featured_image}
+                >
+                  {msToDay(blog.created_at) <= 7 && <NewPill />}
+                </BlogCard>
               ))}
           </ScrollView>
         </>
@@ -136,66 +92,8 @@ const styles = StyleSheet.create({
   h1: {
     padding: 10,
     fontSize: 35,
-    color: colors.text,
+    color: COLORS.text,
     fontFamily: "Public-Sans-Bold",
-  },
-  title: {
-    padding: 10,
-    fontSize: 17,
-    color: colors.text,
-    fontFamily: "Public-Sans-Bold",
-  },
-  text: {
-    padding: 10,
-    fontSize: 15,
-    color: colors.secondary_text,
-    fontFamily: "Public-Sans-Regular",
-  },
-  textContainer: {
-    padding: 10,
-    flex: 1,
-  },
-  blogContainer: {
-    padding: 5,
-    flexDirection: "row",
-    marginHorizontal: 10,
-    marginTop: 10,
-  },
-  image: {
-    padding: 10,
-    width: 175,
-    height: 125,
-    borderRadius: 5,
-    alignSelf: "center",
-  },
-  buttonNavContainer: {
-    margin: 10,
-    flexDirection: "row",
-    justifyContent: "space-evenly",
-    borderBottomWidth: 1.5,
-    borderColor: colors.underline,
-  },
-  activeButton: {
-    padding: 10,
-    fontSize: 18,
-    color: colors.green_primary,
-    borderBottomWidth: 3,
-    fontFamily: "Public-Sans-Semi-Bold",
-    borderColor: colors.green_primary,
-  },
-  newPill: {
-    fontSize: 15,
-    borderRadius: 22,
-    backgroundColor: colors.green_primary,
-    fontFamily: "Public-Sans-Semi-Bold",
-    color: colors.white,
-    position: "absolute",
-    top: 18,
-    left: 15,
-    alignSelf: "flex-start",
-    paddingHorizontal: 16,
-    paddingVertical: 4,
-    zIndex: 1,
   },
   loadingCircle: {
     flex: 1,
