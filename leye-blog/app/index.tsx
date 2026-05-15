@@ -44,12 +44,12 @@ export default function Index() {
   }, []);
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={styles.SAVContainer}>
       {isLoading ? (
         <ActivityIndicator
           size="large"
           color={COLORS.green_primary}
-          style={isLoading ? styles.loadingCircle : null}
+          style={styles.loadingCircle}
         />
       ) : (
         <>
@@ -85,6 +85,9 @@ export default function Index() {
 }
 
 const styles = StyleSheet.create({
+  SAVContainer: {
+    flex: 1,
+  },
   container: {
     padding: 10,
     margin: 10,

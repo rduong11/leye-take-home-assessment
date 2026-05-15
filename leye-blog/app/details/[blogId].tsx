@@ -61,19 +61,6 @@ export default function Details() {
 }
 
 const styles = StyleSheet.create({
-  h1: {
-    margin: 10,
-    fontSize: 30,
-    fontWeight: "bold",
-    color: COLORS.text,
-    fontFamily: "Public-Sans-Bold",
-  },
-  dateText: {
-    margin: 10,
-    fontSize: 15,
-    color: COLORS.text,
-    fontFamily: "Public-Sans-Light",
-  },
   loadingCircle: {
     flex: 1,
     justifyContent: "center",
